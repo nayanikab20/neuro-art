@@ -62,12 +62,14 @@ body {
 .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
 
 .btn {
-  padding: 0.75rem 1.8rem;
+  width: 180px;
+  padding: 0.75rem 0;
   border: 1px solid; border-radius: 1px;
   font-family: 'DM Mono', monospace;
   font-size: 0.7rem; letter-spacing: 2px;
   text-transform: uppercase; cursor: pointer;
   background: transparent; transition: all 0.3s;
+  text-align: center;
 }
 .btn-neuro { border-color: var(--tpn); color: var(--tpn); }
 .btn-neuro:hover { background: #2de8b014; }
@@ -139,19 +141,13 @@ body.medicated #mode-badge { border-color: var(--med); color: var(--med); }
 
 /* ── MEDICATION TOGGLE ── */
 #med-section {
-  max-width: 640px; margin: 0 auto;
-  padding: 5rem 2rem 3rem;
   text-align: center; display: none;
 }
 #med-section .med-label {
   font-family: 'DM Mono', monospace;
   font-size: 0.6rem; letter-spacing: 3px;
   text-transform: uppercase; color: var(--muted);
-  margin-bottom: 1.2rem;
-}
-#med-section .med-desc {
-  font-size: 1rem; color: var(--muted);
-  line-height: 1.7; margin-bottom: 2rem; font-style: italic;
+  margin-bottom: 0.8rem;
 }
 #toggle-track {
   width: 260px; height: 48px;
@@ -259,21 +255,19 @@ body.medicated #toggle-labels span:last-child { color: var(--med); }
     <div id="canvas-wrap">
       <canvas id="main"></canvas>
       <div id="mode-badge">Neurotypical Brain</div>
+      <!-- MEDICATION TOGGLE — inside stage, above scroll hint -->
+      <div id="med-section">
+        <div class="med-label">Now add medication</div>
+        <div id="toggle-track" onclick="toggleMed()">
+          <div id="toggle-labels">
+            <span>ADHD</span>
+            <span>+ Medication</span>
+          </div>
+          <div id="toggle-thumb"></div>
+        </div>
+      </div>
     </div>
     <div id="scroll-hint">scroll to explore ↓</div>
-  </div>
-
-  <!-- MEDICATION TOGGLE — before research -->
-  <div id="med-section">
-    <div class="med-label">Now add medication</div>
-    <p class="med-desc">Watch what stimulants actually do to the seesaw.</p>
-    <div id="toggle-track" onclick="toggleMed()">
-      <div id="toggle-labels">
-        <span>ADHD</span>
-        <span>+ Medication</span>
-      </div>
-      <div id="toggle-thumb"></div>
-    </div>
   </div>
 
   <div id="scroll-content">
@@ -309,10 +303,10 @@ body.medicated #toggle-labels span:last-child { color: var(--med); }
   <div id="footer">
     <div class="footer-label">Sources</div>
     <ul>
-      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5167011/" target="_blank">Castellanos et al. (2006) — Large-scale brain systems in ADHD, Trends in Cognitive Sciences</a></li>
-      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5167011/" target="_blank">Cortese et al. (2012) — Meta-analysis of 55 fMRI studies in ADHD, dopaminergic modulation of DMN — PMC</a></li>
-      <li><a href="https://pubmed.ncbi.nlm.nih.gov/21459168/" target="_blank">Volkow et al. (2011) — Motivation deficit and dopamine reward pathway in ADHD, Molecular Psychiatry</a></li>
-      <li><a href="https://journals.sagepub.com/doi/abs/10.1177/1087054713517542" target="_blank">Querne et al. (2017) — Methylphenidate and TPN/DMN synchronization in ADHD, Journal of Attention Disorders</a></li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/22169776/" target="_blank">Castellanos & Proal (2012) — Large-scale brain systems in ADHD: beyond the prefrontal-striatal model — Trends in Cognitive Sciences</a></li>
+      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3879048/" target="_blank">Cortese et al. (2012) — Toward systems neuroscience of ADHD: a meta-analysis of 55 fMRI studies — American Journal of Psychiatry</a></li>
+      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3010326/" target="_blank">Volkow et al. (2011) — Motivation deficit in ADHD is associated with dysfunction of the dopamine reward pathway — Molecular Psychiatry</a></li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/24420764/" target="_blank">Querne et al. (2017) — Effects of methylphenidate on DMN/TPN synchronization in children with ADHD — Journal of Attention Disorders</a></li>
     </ul>
   </div>
 
