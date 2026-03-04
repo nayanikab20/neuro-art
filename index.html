@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Unconventional Neuroscientist</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07070d;
+  --surface: #0d0d18;
+  --dmn: #9d7fff;
+  --tpn: #2de8b0;
+  --text: #e8e8f0;
+  --muted: #4a4a6a;
+  --faint: #1a1a2e;
+  --med: #f0c040;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── INTRO ── */
+#intro {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 200; background: var(--bg);
+  transition: opacity 0.9s ease;
+  text-align: center; padding: 2rem;
+}
+
+#intro .site-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 3rem;
+}
+
+#intro h1 {
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  font-weight: 300; line-height: 1.05;
+  letter-spacing: -1px; margin-bottom: 1.2rem;
+}
+#intro h1 em { font-style: italic; color: var(--dmn); }
+
+#intro .subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem; color: var(--muted);
+  letter-spacing: 1px; line-height: 1.8;
+  max-width: 420px; margin-bottom: 3rem;
+}
+
+.btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+
+.btn {
+  padding: 0.75rem 1.8rem;
+  border: 1px solid; border-radius: 1px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem; letter-spacing: 2px;
+  text-transform: uppercase; cursor: pointer;
+  background: transparent; transition: all 0.3s;
+}
+.btn-neuro { border-color: var(--tpn); color: var(--tpn); }
+.btn-neuro:hover { background: #2de8b014; }
+.btn-adhd { border-color: var(--dmn); color: var(--dmn); }
+.btn-adhd:hover { background: #9d7fff14; }
+
+/* ── TOPBAR ── */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 1.2rem 2rem;
+  display: none; align-items: center; justify-content: space-between;
+  z-index: 50;
+  background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+}
+.site-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+}
+.site-tag span { color: var(--text); }
+.back-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  cursor: pointer; border: none; background: none; transition: color 0.3s;
+}
+.back-btn:hover { color: var(--text); }
+
+/* ── EXPERIENCE ── */
+#experience { display: none; }
+
+/* ── STAGE ── */
+#stage {
+  width: 100%; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+#canvas-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 1.5rem;
+}
+canvas#main { display: block; }
+
+#mode-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--faint);
+  border-radius: 1px; color: var(--muted);
+  transition: all 0.5s;
+}
+body.mode-adhd #mode-badge { border-color: var(--dmn); color: var(--dmn); }
+body.mode-neuro #mode-badge { border-color: var(--tpn); color: var(--tpn); }
+body.medicated #mode-badge { border-color: var(--med); color: var(--med); }
+
+#scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+  animation: fadeUpDown 2s ease-in-out infinite;
+}
+@keyframes fadeUpDown {
+  0%,100% { opacity: 0.3; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.7; transform: translateX(-50%) translateY(-4px); }
+}
+
+/* ── MEDICATION TOGGLE ── */
+#med-section {
+  max-width: 640px; margin: 0 auto;
+  padding: 5rem 2rem 3rem;
+  text-align: center; display: none;
+}
+#med-section .med-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 1.2rem;
+}
+#med-section .med-desc {
+  font-size: 1rem; color: var(--muted);
+  line-height: 1.7; margin-bottom: 2rem; font-style: italic;
+}
+#toggle-track {
+  width: 260px; height: 48px;
+  background: var(--surface);
+  border: 1px solid var(--faint);
+  border-radius: 1px; margin: 0 auto;
+  position: relative; cursor: pointer;
+  transition: border-color 0.5s;
+  display: flex; align-items: center;
+}
+body.medicated #toggle-track { border-color: var(--med); }
+#toggle-thumb {
+  position: absolute; left: 4px;
+  width: 40px; height: 40px;
+  background: var(--dmn);
+  transition: all 0.5s cubic-bezier(0.23,1,0.32,1);
+}
+body.medicated #toggle-thumb { left: 216px; background: var(--med); }
+#toggle-labels {
+  width: 100%; display: flex;
+  justify-content: space-between; padding: 0 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 2px;
+  text-transform: uppercase; pointer-events: none;
+}
+#toggle-labels span { color: var(--muted); transition: color 0.4s; }
+body:not(.medicated) #toggle-labels span:first-child { color: var(--dmn); }
+body.medicated #toggle-labels span:last-child { color: var(--med); }
+
+/* ── SCROLL CONTENT ── */
+#scroll-content { max-width: 640px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+.section {
+  margin-bottom: 6rem;
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.section.visible { opacity: 1; transform: none; }
+
+.section .tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 1rem;
+}
+.section h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 300; line-height: 1.15;
+  margin-bottom: 1.2rem; letter-spacing: -0.5px;
+}
+.section p { color: var(--muted); line-height: 1.85; font-size: 1.05rem; }
+.section p strong { color: #b0b0cc; font-weight: 400; }
+
+.citation {
+  margin-top: 1.5rem; padding: 0.8rem 1.2rem;
+  border-left: 1px solid var(--faint);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem; color: #2e2e4a; line-height: 1.7;
+}
+
+/* ── FOOTER ── */
+#footer {
+  max-width: 640px; margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+  border-top: 1px solid var(--faint);
+}
+#footer .footer-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem;
+}
+#footer ul { list-style: none; }
+#footer li { margin-bottom: 0.8rem; }
+#footer a {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem; color: #2a2a45;
+  text-decoration: none; line-height: 1.6;
+  transition: color 0.3s; display: block;
+}
+#footer a:hover { color: var(--dmn); }
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="site-name">The Unconventional Neuroscientist</div>
+  <h1>What's your<br>brain on <em>ADHD?</em></h1>
+  <p class="subtitle">Peer-reviewed neuroscience, rendered as experience.<br>Every visual is traceable to a real paper.</p>
+  <div class="btn-group">
+    <button class="btn btn-neuro" onclick="startExperience('neuro')">Neurotypical Brain</button>
+    <button class="btn btn-adhd" onclick="startExperience('adhd')">ADHD Brain</button>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="site-tag">The Unconventional <span>Neuroscientist</span></div>
+  <button class="back-btn" onclick="resetToIntro()">← change brain</button>
+</div>
+
+<!-- EXPERIENCE -->
+<div id="experience">
+
+  <div id="stage">
+    <div id="canvas-wrap">
+      <canvas id="main"></canvas>
+      <div id="mode-badge">Neurotypical Brain</div>
+    </div>
+    <div id="scroll-hint">scroll to explore ↓</div>
+  </div>
+
+  <!-- MEDICATION TOGGLE — before research -->
+  <div id="med-section">
+    <div class="med-label">Now add medication</div>
+    <p class="med-desc">Watch what stimulants actually do to the seesaw.</p>
+    <div id="toggle-track" onclick="toggleMed()">
+      <div id="toggle-labels">
+        <span>ADHD</span>
+        <span>+ Medication</span>
+      </div>
+      <div id="toggle-thumb"></div>
+    </div>
+  </div>
+
+  <div id="scroll-content">
+    <div class="section">
+      <div class="tag">Finding 01 — The Seesaw</div>
+      <h2>Your brain has two networks that take turns.</h2>
+      <p>The <strong>Default Mode Network</strong> is active when you're daydreaming or mind-wandering. The <strong>Task Positive Network</strong> is active when you're focusing on something. In most brains, when one switches on, the other switches off. Like a seesaw — one up, one down.</p>
+      <div class="citation">Castellanos et al. (2006) — ADHD is now understood as a disorder of functional connectivity. The anti-correlation between DMN and TPN, observed through resting-state fMRI, is disrupted in ADHD.</div>
+    </div>
+
+    <div class="section">
+      <div class="tag">Finding 02 — The Intrusion</div>
+      <h2 id="s2h">In ADHD, the DMN stays too active and the TPN fires too weakly.</h2>
+      <p id="s2p">When someone with ADHD tries to focus, the TPN activates — but less strongly than it should. At the same time, the DMN doesn't quiet down like it's supposed to. So you get an underperforming focus network and an overactive daydream network running at the same time. That's what fMRI studies consistently show.</p>
+      <div class="citation">Cortese et al. (2012), meta-analysis of 55 fMRI studies — ADHD groups showed hyperactivity in the DMN and hypoactivity in task-positive networks including the frontoparietal and ventral attentional networks during cognitive tasks.</div>
+    </div>
+
+    <div class="section">
+      <div class="tag">Finding 03 — Dopamine</div>
+      <h2>The signal that says "pay attention" is weaker.</h2>
+      <p>Dopamine helps the brain decide what's worth focusing on. In ADHD, the dopamine reward pathway is underactive. Ordinary tasks don't register as important — the signal is too faint. This is also why hyperfocus happens. When something is genuinely interesting, dopamine spikes, and focus becomes effortless.</p>
+      <div class="citation">Volkow et al. (2011), Mol. Psychiatry — Motivation deficit in ADHD is directly linked to dysfunction in the dopamine reward pathway, particularly in the striatum and prefrontal cortex.</div>
+    </div>
+
+    <div class="section">
+      <div class="tag">Finding 04 — What Medication Actually Does</div>
+      <h2 id="s4h">Medication restores the rhythm between the two networks.</h2>
+      <p id="s4p">Stimulant medication raises dopamine in the prefrontal cortex. This doesn't just quieten the DMN — it restores the anti-phase synchronization between DMN and TPN. The networks start taking turns again properly. The seesaw starts working.</p>
+      <div class="citation">Querne et al. (2017), Journal of Attention Disorders — Methylphenidate initiated anti-phase TPN/DMN synchronization in children with ADHD, reduced performance variability, and abolished the link between DMN activity and response time variability.</div>
+    </div>
+  </div>
+
+  <div id="footer">
+    <div class="footer-label">Sources</div>
+    <ul>
+      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5167011/" target="_blank">Castellanos et al. (2006) — Large-scale brain systems in ADHD, Trends in Cognitive Sciences</a></li>
+      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5167011/" target="_blank">Cortese et al. (2012) — Meta-analysis of 55 fMRI studies in ADHD, dopaminergic modulation of DMN — PMC</a></li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/21459168/" target="_blank">Volkow et al. (2011) — Motivation deficit and dopamine reward pathway in ADHD, Molecular Psychiatry</a></li>
+      <li><a href="https://journals.sagepub.com/doi/abs/10.1177/1087054713517542" target="_blank">Querne et al. (2017) — Methylphenidate and TPN/DMN synchronization in ADHD, Journal of Attention Disorders</a></li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
+const TOTAL_D = 220;       // sum of both diameters — stays constant always
+const MIN_R   = 24;        // floor: neither circle goes below this
+const MAX_R   = TOTAL_D / 2 - MIN_R; // ceiling ~86px
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let mode      = 'neuro';
+let medicated = false;
+let t         = 0;
+let raf;
+
+// ── START ──────────────────────────────────────────────────────────────────
+function startExperience(m) {
+  mode = m; medicated = false;
+  document.body.className = 'mode-' + m;
+  const intro = document.getElementById('intro');
+  intro.style.opacity = '0';
+  setTimeout(() => {
+    intro.style.display = 'none';
+    document.getElementById('topbar').style.display = 'flex';
+    document.getElementById('experience').style.display = 'block';
+    document.getElementById('med-section').style.display = m === 'adhd' ? 'block' : 'none';
+    document.getElementById('mode-badge').textContent =
+      m === 'neuro' ? 'Neurotypical Brain' : 'ADHD Brain';
+    updateContent();
+    initCanvas();
+    initScroll();
+  }, 900);
+}
+
+function resetToIntro() {
+  cancelAnimationFrame(raf);
+  t = 0; medicated = false;
+  document.body.className = '';
+  document.getElementById('experience').style.display = 'none';
+  document.getElementById('topbar').style.display = 'none';
+  const intro = document.getElementById('intro');
+  intro.style.display = 'flex';
+  setTimeout(() => intro.style.opacity = '1', 10);
+}
+
+// ── CANVAS INIT ────────────────────────────────────────────────────────────
+function cw() { return Math.min(window.innerWidth, 700); }
+function ch() { return Math.min(window.innerHeight * 0.70, 400); }
+
+function initCanvas() {
+  cancelAnimationFrame(raf);
+  const c = document.getElementById('main');
+  c.width = cw(); c.height = ch();
+  loop();
+}
+
+// ── PHYSICS — SINGLE SOURCE OF TRUTH ──────────────────────────────────────
+// wave: -1 = DMN fully dominant, +1 = TPN fully dominant
+// Both radii AND seesaw angle derive from wave alone.
+function getWave() {
+  if (medicated) {
+    // Partial anti-phase synchronization (Querne et al. 2017)
+    // The seesaw rhythm is restored — same frequency as neurotypical
+    // But occasionally the synchronization breaks down:
+    // both networks briefly equalize, then the rhythm reestablishes
+    const rhythm = Math.sin(t * 0.45);
+
+    // Lapse: a periodic breakdown in synchronization
+    // Every ~14 seconds, a brief window where the wave collapses toward 0
+    // (both networks momentarily equalize before snapping back)
+    const lapseFreq = 0.45;  // how often lapses occur
+    const lapseCycle = Math.sin(t * lapseFreq);
+    // When lapseCycle is near its peak, we're in a lapse window
+    const lapseDepth = Math.max(0, lapseCycle - 0.7) / 0.3; // 0..1, only triggers briefly
+    // During a lapse, wave is pulled toward 0 (equalization)
+    return rhythm * (1 - lapseDepth * 0.85);
+  }
+  if (mode === 'neuro') {
+    // Clean sinusoidal seesaw, full range
+    return Math.sin(t * 0.45);
+  }
+  // ADHD: compressed midrange, slow jitter, never resolves
+  const slow   = 0.18 * Math.sin(t * 0.35);
+  const jitter = 0.10 * Math.sin(t * 0.9 + 0.7)
+               + 0.07 * Math.sin(t * 1.5 + 1.4);
+  return slow + jitter; // roughly ±0.35, moves slowly
+}
+
+function physics() {
+  const wave = getWave();
+
+  // Linear mapping: wave → radii
+  // wave = +1 → tpnR = MAX_R, dmnR = MIN_R
+  // wave = -1 → dmnR = MAX_R, tpnR = MIN_R
+  const mid  = (MAX_R + MIN_R) / 2;
+  const half = (MAX_R - MIN_R) / 2;
+  const tpnR = mid + wave * half;
+  const dmnR = mid - wave * half;
+
+  // Seesaw angle from same wave — right side (TPN) dips when wave > 0
+  const seesawAngle = wave * 0.26;
+
+  return { dmnR, tpnR, seesawAngle };
+}
+
+// ── RENDER LOOP ────────────────────────────────────────────────────────────
+function loop() {
+  t += 0.016;
+  const c = document.getElementById('main');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const cx = W / 2, cy = H / 2;
+
+  // Trail (soft persistence)
+  ctx.fillStyle = 'rgba(10,10,15,0.22)';
+  ctx.fillRect(0, 0, W, H);
+
+  const { dmnR, tpnR, seesawAngle } = physics();
+
+  // Circles closer together: armLen reduced
+  const armLen = W * 0.20;
+  const cos = Math.cos(seesawAngle), sin = Math.sin(seesawAngle);
+
+  const dmnX = cx - armLen * cos;
+  const dmnY = cy + armLen * sin;
+  const tpnX = cx + armLen * cos;
+  const tpnY = cy - armLen * sin;
+
+  // Bar
+  ctx.beginPath();
+  ctx.moveTo(dmnX, dmnY);
+  ctx.lineTo(tpnX, tpnY);
+  ctx.strokeStyle = '#181830';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Pivot triangle
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + 6);
+  ctx.lineTo(cx - 8, cy + 16);
+  ctx.lineTo(cx + 8, cy + 16);
+  ctx.closePath();
+  ctx.fillStyle = '#0f0f22';
+  ctx.fill();
+
+  const tpnRGB = medicated ? [240,192,64] : [45,232,176];
+
+  // Intensity: how dominant each circle is right now (0..1)
+  const dmnInt = dmnR / MAX_R;
+  const tpnInt = tpnR / MAX_R;
+
+  drawNode(ctx, dmnX, dmnY, dmnR, [157,127,255], dmnInt);
+  drawNode(ctx, tpnX, tpnY, tpnR, tpnRGB, tpnInt);
+
+  // Labels fade with dominance
+  ctx.font = '11px "DM Mono", monospace';
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = `rgba(157,127,255,${0.2 + dmnInt * 0.7})`;
+  ctx.fillText('Default Mode', dmnX, dmnY + dmnR + 22);
+  ctx.fillText('Network', dmnX, dmnY + dmnR + 36);
+
+  const [tr,tg,tb] = tpnRGB;
+  ctx.fillStyle = `rgba(${tr},${tg},${tb},${0.2 + tpnInt * 0.7})`;
+  ctx.fillText('Task Positive', tpnX, tpnY + tpnR + 22);
+  ctx.fillText('Network', tpnX, tpnY + tpnR + 36);
+
+  raf = requestAnimationFrame(loop);
+}
+
+// Orbiting particles per node
+const PARTICLES = {};
+function getParticles(key) {
+  if (!PARTICLES[key]) {
+    PARTICLES[key] = Array.from({length: 28}, () => ({
+      angle: Math.random() * Math.PI * 2,
+      orbitR: 28 + Math.random() * 55,
+      speed: (0.3 + Math.random() * 0.7) * (Math.random() < 0.5 ? 1 : -1),
+      size: 1 + Math.random() * 2,
+      phase: Math.random() * Math.PI * 2,
+    }));
+  }
+  return PARTICLES[key];
+}
+
+function drawNode(ctx, x, y, r, rgb, intensity) {
+  const [R,G,B] = rgb;
+
+  // Concentric halo rings — 3 rings at increasing radii, fading out
+  [2.8, 2.0, 1.45].forEach((mult, i) => {
+    const ringR = r * mult;
+    const alpha = (0.06 - i * 0.015) * intensity;
+    const g = ctx.createRadialGradient(x, y, ringR * 0.7, x, y, ringR);
+    g.addColorStop(0, `rgba(${R},${G},${B},${alpha})`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(x, y, ringR, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // Faint ring stroke
+    ctx.beginPath();
+    ctx.arc(x, y, ringR, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${R},${G},${B},${0.04 * intensity})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+
+  // Core radial glow
+  const grd = ctx.createRadialGradient(x, y, 0, x, y, r * 1.4);
+  grd.addColorStop(0,   `rgba(${R},${G},${B},${0.22 * intensity})`);
+  grd.addColorStop(0.6, `rgba(${R},${G},${B},${0.08 * intensity})`);
+  grd.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(x, y, r * 1.4, 0, Math.PI * 2);
+  ctx.fillStyle = grd;
+  ctx.fill();
+
+  // Core fill
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(${R},${G},${B},0.09)`;
+  ctx.fill();
+
+  // Rim
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(${R},${G},${B},${0.5 * intensity + 0.1})`;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Centre dot
+  ctx.beginPath();
+  ctx.arc(x, y, 3, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(${R},${G},${B},0.7)`;
+  ctx.fill();
+
+  // Orbiting particles
+  const pts = getParticles(`${R}${G}`);
+  pts.forEach(p => {
+    const a = p.angle + t * p.speed * 0.25;
+    const orbit = p.orbitR * (0.5 + intensity * 0.5);
+    const px = x + Math.cos(a) * orbit;
+    const py = y + Math.sin(a) * orbit * 0.65;
+    ctx.beginPath();
+    ctx.arc(px, py, p.size * intensity, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${R},${G},${B},${0.08 + intensity * 0.18})`;
+    ctx.fill();
+  });
+}
+
+// ── MEDICATION ─────────────────────────────────────────────────────────────
+function toggleMed() {
+  medicated = !medicated;
+  document.body.classList.toggle('medicated', medicated);
+  document.getElementById('mode-badge').textContent =
+    medicated ? 'ADHD Brain + Medication' : 'ADHD Brain';
+  updateContent();
+}
+
+function updateContent() {
+  if (medicated) {
+    document.getElementById('s2h').textContent = 'Medication restores the rhythm — most of the time.';
+    document.getElementById('s2p').textContent =
+      'With more dopamine available, the DMN starts deactivating during tasks and the TPN fires more strongly. The anti-phase synchronization returns. But watch closely — every so often the two circles briefly equalize before the rhythm reestablishes. That\'s the "partial" in partial synchronization. The coordination is restored, but it still lapses occasionally.';
+    document.getElementById('s4h').textContent = 'The seesaw works again. Just not perfectly.';
+    document.getElementById('s4p').textContent =
+      'Querne et al. (2017) specifically found that methylphenidate initiated partial — not complete — anti-phase synchronization. The medicated ADHD brain looks closer to neurotypical, but it never fully matches it. Those brief moments where the circles equalize? That\'s what partial synchronization looks like.';
+  } else {
+    document.getElementById('s2h').textContent = 'In ADHD, the DMN stays too active and the TPN fires too weakly.';
+    document.getElementById('s2p').textContent =
+      "When someone with ADHD tries to focus, the TPN activates — but less strongly than it should. At the same time, the DMN doesn't quiet down like it's supposed to. So you get an underperforming focus network and an overactive daydream network running at the same time. That's what fMRI studies consistently show.";
+    document.getElementById('s4h').textContent = 'Medication restores the rhythm between the two networks.';
+    document.getElementById('s4p').textContent =
+      "Stimulant medication raises dopamine in the prefrontal cortex. This doesn't just quieten the DMN — it restores the anti-phase synchronization between DMN and TPN. The networks start taking turns again properly. The seesaw starts working.";
+  }
+}
+
+// ── SCROLL OBSERVER ────────────────────────────────────────────────────────
+function initScroll() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.remove('visible');
+    obs.observe(s);
+  });
+}
+
+// ── RESIZE ─────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  const c = document.getElementById('main');
+  if (c && document.getElementById('experience').style.display !== 'none') {
+    c.width = cw(); c.height = ch();
+  }
+});
+</script>
+</body>
+</html>
